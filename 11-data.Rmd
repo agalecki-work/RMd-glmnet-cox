@@ -120,7 +120,7 @@ nrow(dtc) # Number of rows with complete data
 ```
 
 ```{r save-dtc}}
-fnm <- "Rdata/11-dtc.Rdata"
+fnm <- "raw-Rdata/11-dtc.Rdata"
 save(dtc, file = fnm )
 ```
 
@@ -150,10 +150,10 @@ logYnew <- logY[sel_rows]
 Save matrices for model fitting.
 
 ```{r save-mtx}}
-fnm <- "Rdata/11-mtx.Rdata"
+fnm <- "raw-Rdata/11-mtx.Rdata"
 save(X,logY, delta, file = fnm )
 
-fnm <- "Rdata/11-mtxnew.Rdata"
+fnm <- "raw-Rdata/11-mtxnew.Rdata"
 save(Xnew, logYnew, file = fnm )
 ```
 
