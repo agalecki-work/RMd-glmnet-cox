@@ -36,8 +36,11 @@ vignette_Rmd <- paste(vignette_nm,".Rmd", sep = "")
 vignette_R   <- paste(vignette_nm,".R",   sep = "")
 vignette_html<- paste(vignette_nm, ".html",   sep = "")
 
+xlsxbs <- .params$xlsxbs
 xlsxnm <- paste("datain/", .params$xlsxbs, ".xlsx", sep="")
 ```
+
+
 
 # Process raw dataset
 
@@ -86,7 +89,7 @@ cln_vnms  <- c("sex",    "sbp_tl",       "dbp_tl", "ageonset_tl", "bmi_tl",
 * `dat_anl`: analytical dataset with a subset of variables.
 
 ```{r dat-anl}
-select_vars <-  c("fu_time", "status", cln_vnms, prt_vnms)
+select_vars <-  c("index", "fu_time", "status", cln_vnms, prt_vnms)
 dat_anl <- dat_raw[,select_vars]
 class(dat_anl)
 dim(dat_anl)
@@ -99,12 +102,12 @@ with a large number of missing values and decide whether to keep it or not.
 ```{r missing-values}
 count_miss_vals <- sapply(dat_anl, function(x) sum(is.na(x)))
 count_miss_vals <- sort(count_miss_vals, decreasing = TRUE) 
-ncol(dat_anl)                          # Number of variables in analysis
+ncol(dat_anl)                          # Number of variables in analytical dataset
 sum(count_miss_vals == 0)              # Number of variables without missing values  
 count_miss_vals[count_miss_vals  >  0] # Variables with missing values
 ```
 
-Remove variables with excessive number of missing values
+Remove variable(s) with excessive number of missing values.
 
 ```{r remove-vars-miss-vals}
 dat_anl[, c("bmi_tl")] <- NULL
@@ -112,11 +115,9 @@ dat_anl[, c("bmi_tl")] <- NULL
 X_vnms <- c(cln_vnms2, prt_vnms)
 ```
 
-``` 
 Select subset of rows with *complete*  cases
 
 ```{r dtc-cmplt-cases}
-
 cmplt_cases <- complete.cases(dat_anl)
 dtc <- dat_raw[cmplt_cases, ]  # Data with complete cases
 nrow(dtc) # Number of rows with complete data
@@ -135,6 +136,7 @@ Data frame `dtc` with complete cases contains `r nrow(dtc)` rows  and `r ncol(dt
 Extract `X` and `Y` from `dtc` data frame with complete cases.
 
 ```{r XYmtx}
+idx <- dtc[, "index"]      # Vector with subject indices
 X    <- as.matrix(dtc[, X_vnms]) 
 logY  <- log(dtc[, "fu_time"]) 
 delta <- dtc[, "status"]      # status = 0 indicates censored observation 
@@ -146,6 +148,7 @@ n <- length(logY)
 
 ```{r XY-new}
 sel_rows <- delta == 1
+idxnew <- idx[sel_rows]
 Xnew <- X[sel_rows,]
 logYnew <- logY[sel_rows] 
 ```
@@ -154,10 +157,10 @@ Save matrices for model fitting.
 
 ```{r save-mtx}}
 fnm <- "raw-Rdata/11-mtx.Rdata"
-save(X,logY, delta, file = fnm )
+save(idx, X,logY, delta, file = fnm )
 
 fnm <- "raw-Rdata/11-mtxnew.Rdata"
-save(Xnew, logYnew, file = fnm )
+save(idxnew, Xnew, logYnew, file = fnm )
 ```
 
 
