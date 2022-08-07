@@ -1,0 +1,119 @@
+---
+title: "Code chunk options"
+author: "Anonymous"
+date: "August 7th, 2022"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+---
+
+```{r Rmd-init, include = FALSE}
+## The code in this chunk will be executed, will not appear in rendered .html file
+
+##  Silently sets knitr chunk options used in Rmd file
+require(knitr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  results = "markup",  
+  comment="#>",
+  highlight = TRUE,
+  fig.width = 12, fig.height=8, fig.path='Figs/'
+)
+
+
+# Silently clears Global environment
+rm(list=ls())
+
+.params <- list(vignette_nm = "95-test-chunks") # !!!
+
+# Silently assign variables for later use
+vignette_nm  <- .params$vignette_nm   # .params refers to list defined above
+vignette_Rmd <- paste(vignette_nm,".Rmd", sep = "")
+vignette_R   <- paste(vignette_nm,".R",   sep = "")
+vignette_html<- paste(vignette_nm, ".html",   sep = "")
+```
+
+Options used in the yaml header are described in more detail
+[here](https://bookdown.org/yihui/rmarkdown/documents.html).
+
+# Main section
+
+The `r vignette_Rmd` document provides examples of code chunk options.
+
+* Executed by: `r Sys.getenv("USERNAME")` on `r Sys.time()`.  
+* Located in `r getwd()` folder. 
+* Used to generate `r vignette_html` and `r vignette_R` documents
+* Options used in the yaml header are described in more detail
+[here](https://bookdown.org/yihui/rmarkdown/documents.html).
+
+## Examples of code chunk options
+
+
+### Default code chunk options
+
+* By default knitr will run the code chunk and will display output as shown below.
+* Lines of the output are preceeded with `#>" will appear in the finished (e.g. html) file.  
+* Lines with R code will appear in `r vignette_R` file
+
+```{r sessionInfo}
+ls()
+vignette_nm
+sessionInfo()
+```
+
+### Option include = FALSE
+
+This example illustrates how the code chunk in this example reads: 
+
+```
+(test_include <- "Test include") # example code displayed for reference only  
+```
+
+This code chunk (not shown) was executed  using combination of two options:  `echo=FALSE, results="hide"`.
+
+
+* option `include = FALSE` prevents code and results from appearing in the finished (e.g html) file.
+* R Markdown runs the code in the chunk, and the results can be used by subsequent chunks
+* R statements are _saved_ in `r vignette_R` file and are ready for execution
+
+
+```{r test-include2, include = FALSE}
+# Note: This code/results are not displayed in rendered html file 
+(test_include2 <- "Test include: include = FALSE")
+```
+
+The following code/output confirms that the code chunk was indeed executed.
+
+```{r test-include2-check}
+exists("test_include2")
+test_include2
+```
+
+
+### Commenting out code chunks in tangle .R file
+
+* echo =FALSE: Corresponding code change does not show in the html file 
+
+```{r test-tangle-out, echo= FALSE, eval=FALSE, comment = "##"}
+(test_tangle <- "Test tangle")
+```
+The following output confirms that code chunk was not executed (as intended)
+
+```{r test-tangleout-check}
+exists("test_tangle")
+```
+
+## Figure example
+
+```{r test-figure, echo = FALSE, fig.height=4, fig.width=8, dev ="svg"}
+plot(cars)
+```
+
+Save results in external Rdata file(s) for later use.
+
+```
+save(test_knitr_setup,test_include, "Rdata/90-test-chunks.Rdata")
+```
+
+
