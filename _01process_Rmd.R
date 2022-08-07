@@ -1,5 +1,7 @@
 # Make sure you are running R program in correct working directory
 getwd()
+
+# source("_01process_Rmd.R")
 source("Rfunctions/process_Rmd.R") # Function process_Rmd
 
 # In general `Rmd_names` is a character _vector_
