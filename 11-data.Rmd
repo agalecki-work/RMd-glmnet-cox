@@ -1,5 +1,5 @@
 ---
-title: "Read raw data"
+title: "Data for Cox using glmnet"
 author: "Anonymous"
 date: "August 7th, 2022"
 output: 
@@ -42,19 +42,19 @@ xlsxnm <- paste("datain/", .params$xlsxbs, ".xlsx", sep="")
 
 
 
-# Process raw dataset
+# Process xlsx dataset
 
 
-* This is `r vignette_nm` document that illustrates how to process raw data stored in
+* This is `r vignette_nm` Rmd document that illustrates how to process raw data stored in
   Excel format.
 * Rmd file  `r vignette_Rmd` was executed at `r Sys.time()`
-* Script requires that `r xlsxbs` is stored in `datain` subfolder.
+* Script requires that `r xlsxbs` xlsx data is stored in `datain` subfolder.
 
 
 Data frame `dtc` with complete cases is created from `r xlsxbs` dataset.
 
 
-##  Preprocessing raw data
+##  dat_raw data
 
 * Original raw data are stored in .xlsx format
 * Vector `nms_raw` contains original variable names
@@ -73,7 +73,9 @@ nms_low <- tolower(nms_raw)
 (names(dat_raw) <- nms_low)
 ```
 
-Auxiliary lists of variable names in `dat_raw` are created.
+## Lists of variables
+
+Auxiliary lists of variable names included in `dat_raw` are created.
 
 * `prt_vnms`: names of protein variables
 * `cln_vnms`: names of clinical variables
@@ -86,6 +88,8 @@ cln_vnms  <- c("sex",    "sbp_tl",       "dbp_tl", "ageonset_tl", "bmi_tl",
               "age_tl", "b_hba1c_prc",  "du_acr", "bl_egfr")
 ```
 
+## dat_anl with selected vraiables
+
 * `dat_anl`: analytical dataset with a subset of variables.
 
 ```{r dat-anl}
@@ -95,6 +99,8 @@ class(dat_anl)
 dim(dat_anl)
 names(dat_anl)
 ```
+
+## Missing values in dat_anl
 
 Summarize  number of missing values in analytical dataset. This step may be helpful to identify variables
 with a large number of missing values and decide whether to keep it or not.   
@@ -107,6 +113,7 @@ sum(count_miss_vals == 0)              # Number of variables without missing val
 count_miss_vals[count_miss_vals  >  0] # Variables with missing values
 ```
 
+
 Remove variable(s) with excessive number of missing values.
 
 ```{r remove-vars-miss-vals}
@@ -114,6 +121,7 @@ dat_anl[, c("bmi_tl")] <- NULL
 (cln_vnms2 <- cln_vnms[! cln_vnms %in% c("bmi_tl")]) 
 X_vnms <- c(cln_vnms2, prt_vnms)
 ```
+## Data dtc with complete cases
 
 Select subset of rows with *complete*  cases
 
@@ -130,7 +138,7 @@ save(dtc, file = fnm )
 
 Data frame `dtc` with complete cases contains `r nrow(dtc)` rows  and `r ncol(dtc)` columns. 
 
-## Create X, Y and Xnew matrices
+## Create X, logY and other matrices
 
 
 Extract `X` and `Y` from `dtc` data frame with complete cases.
